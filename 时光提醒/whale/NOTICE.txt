@@ -1,0 +1,8 @@
+鲸鱼娘表情素材（whale/*.webp）
+
+来源：diwer/ai-biaoqingbao（大肥鱼表情包）
+角色设计：ZipZipPipe / 上善无形
+素材许可：CC BY-NC-SA 4.0
+https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+本页中的图片为上述素材的修改版本：去背景、裁切、底部对齐、动画重排，并用于非商业的本地待办提醒页。修改版本同样按 CC BY-NC-SA 4.0 共享。

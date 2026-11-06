@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="时光提醒 —— 有一只大肥鱼陪你记住截止时间、准时叫你做事的待办提醒页。">
+  <meta name="theme-color" content="#eef4ff">
+  <title>时光提醒 · 大肥鱼陪你做完</title>
+  <link rel="icon" type="image/x-icon" href="whale-icon.ico">
+  <link rel="stylesheet" href="styles.css?v=fish2">
+</head>
+<body>
+  <div class="backdrop" aria-hidden="true">
+    <span class="blob blob-coral"></span>
+    <span class="blob blob-violet"></span>
+    <span class="blob blob-mint"></span>
+    <span class="grain"></span>
+  </div>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="8.2"></circle>
+            <path d="M12 7.2v5.1l3.4 2"></path>
+          </svg>
+        </div>
+        <div class="brand-copy">
+          <h1>时光提醒</h1>
+          <p id="greeting">下午好，今天也要从容一点。</p>
+        </div>
+      </div>
+
+      <div class="clock" aria-label="当前时间">
+        <span class="clock-time" id="liveClock">--:--:--</span>
+        <span class="clock-date" id="todayLabel">--月--日 星期-</span>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="main-col" aria-label="待办清单">
+        <section class="fish-hero" aria-label="大肥鱼伙伴">
+          <span class="hero-bubble hb-a" aria-hidden="true"></span>
+          <span class="hero-bubble hb-b" aria-hidden="true"></span>
+          <span class="hero-bubble hb-c" aria-hidden="true"></span>
+
+          <div class="hero-copy">
+            <p class="hero-kicker"><span class="hero-dot"></span>DEEPSEEK · WHALE GIRL</p>
+            <h2>本鱼陪你，<br><span>一件一件</span>做完。</h2>
+            <p class="hero-sub">慢慢来也没关系，每完成一件，本鱼就多一分 token。</p>
+            <div class="hero-progress">
+              <div class="hero-progress-head">
+                <span>任务完成度</span>
+                <strong id="fishPercent">0%</strong>
+              </div>
+              <div class="hero-bar" id="fishProgressBar" role="progressbar" aria-label="任务完成度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                <i id="fishBar"></i>
+              </div>
+              <p class="hero-progress-note" id="fishProgressNote">还没有任务，本鱼先饿着</p>
+            </div>
+          </div>
+
+          <div class="fish-scene">
+            <span class="sea-bubble sb-a" aria-hidden="true"></span>
+            <span class="sea-bubble sb-b" aria-hidden="true"></span>
+            <span class="sea-bubble sb-c" aria-hidden="true"></span>
+
+            <div class="fish-bubble" id="fishBubble" role="status" aria-live="polite">
+              <span class="fish-bubble-text" id="fishBubbleText">做得这么慢，本鱼哪里来的token。</span>
+            </div>
+
+            <div class="fish-stage">
+              <span class="fish-halo" aria-hidden="true"></span>
+              <button class="fish-button" id="fishButton" type="button" data-mood="sad" aria-label="忧郁的鲸鱼娘，点击戳一戳">
+                <span class="fish-bob">
+                  <img class="fish-img" id="fishImage" src="whale/sad.webp" width="360" height="360" alt="" draggable="false">
+                </span>
+              </button>
+              <span class="fish-particles" id="fishParticles" aria-hidden="true"></span>
+            </div>
+
+            <span class="fish-hint"><span class="hint-dot"></span>戳戳本鱼</span>
+          </div>
+        </section>
+
+        <form class="composer" id="composer" autocomplete="off" novalidate>
+          <div class="composer-main">
+            <span class="composer-plus" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+            </span>
+            <label class="sr-only" for="titleInput">任务内容</label>
+            <input
+              id="titleInput"
+              class="title-input"
+              type="text"
+              maxlength="90"
+              placeholder="接下来要做什么？"
+              autocomplete="off"
+            >
+          </div>
+
+          <div class="composer-options">
+            <label class="date-field" for="deadlineInput">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3.5" y="5.5" width="17" height="15" rx="4"></rect>
+                <path d="M8 3.5v4M16 3.5v4M3.5 10.5h17"></path>
+              </svg>
+              <input id="deadlineInput" type="datetime-local" aria-label="截止时间">
+            </label>
+
+            <div class="priority" role="radiogroup" aria-label="优先级">
+              <button class="priority-btn active" type="button" data-priority="normal" role="radio" aria-checked="true">
+                <i class="p-dot"></i><span>普通</span>
+              </button>
+              <button class="priority-btn" type="button" data-priority="important" role="radio" aria-checked="false">
+                <i class="p-dot"></i><span>重要</span>
+              </button>
+              <button class="priority-btn" type="button" data-priority="urgent" role="radio" aria-checked="false">
+                <i class="p-dot"></i><span>紧急</span>
+              </button>
+            </div>
+
+            <button class="btn-cancel" id="cancelEdit" type="button" hidden>取消</button>
+            <button class="btn-add" id="submitBtn" type="submit">
+              <span id="submitLabel">添加任务</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h13M13 6.5l5.5 5.5L13 17.5"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div class="quick-presets" aria-label="快捷截止时间">
+            <span class="quick-label">快捷</span>
+            <button type="button" data-preset="1h">1 小时后</button>
+            <button type="button" data-preset="tonight">今晚 20:00</button>
+            <button type="button" data-preset="tomorrow">明天 09:00</button>
+            <button type="button" data-preset="3d">三天后</button>
+          </div>
+        </form>
+
+        <div class="list-header">
+          <div class="tabs" id="tabs" role="tablist" aria-label="任务筛选">
+            <span class="tab-indicator" id="tabIndicator" aria-hidden="true"></span>
+            <button class="tab active" type="button" role="tab" aria-selected="true" data-filter="all">
+              全部<span class="count">0</span>
+            </button>
+            <button class="tab" type="button" role="tab" aria-selected="false" data-filter="active">
+              进行中<span class="count">0</span>
+            </button>
+            <button class="tab" type="button" role="tab" aria-selected="false" data-filter="done">
+              已完成<span class="count">0</span>
+            </button>
+          </div>
+          <button class="clear-btn" id="clearCompleted" type="button" hidden>清除已完成</button>
+        </div>
+
+        <div class="task-list" id="taskList" aria-live="polite"></div>
+
+        <div class="empty" id="emptyState" hidden>
+          <div class="empty-art" aria-hidden="true">
+            <svg viewBox="0 0 120 120">
+              <defs>
+                <linearGradient id="emptyGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#9ab4ff"></stop>
+                  <stop offset="0.55" stop-color="#4d6bfe"></stop>
+                  <stop offset="1" stop-color="#63d8f2"></stop>
+                </linearGradient>
+              </defs>
+              <circle cx="60" cy="60" r="42" fill="url(#emptyGrad)" opacity="0.14"></circle>
+              <circle cx="60" cy="60" r="33" fill="#fffdfb" opacity="0.92"></circle>
+              <circle cx="60" cy="60" r="33" fill="none" stroke="url(#emptyGrad)" stroke-width="2.5" opacity="0.7"></circle>
+              <path d="M60 41v20l13 8" fill="none" stroke="url(#emptyGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"></path>
+              <circle cx="60" cy="60" r="3.6" fill="#4d6bfe"></circle>
+              <circle cx="96" cy="30" r="3" fill="#63d8f2" opacity="0.7"></circle>
+              <circle cx="24" cy="84" r="2.4" fill="#8ea6ff" opacity="0.65"></circle>
+              <path d="M92 70l1.6 4.4 4.4 1.6-4.4 1.6L92 82l-1.6-4.4L86 76l4.4-1.6z" fill="#e39b2f" opacity="0.65"></path>
+            </svg>
+          </div>
+          <h2 id="emptyTitle">现在没有待办</h2>
+          <p id="emptyText">去添加一件想做的事，或者享受这份从容。</p>
+          <button class="btn-soft" id="emptyAction" type="button">添加第一条任务</button>
+        </div>
+
+        <p class="main-foot">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l7 3v5.2c0 4.3-2.9 7.4-7 8.8-4.1-1.4-7-4.5-7-8.8V6.5l7-3z"></path><path d="M9 12l2.2 2.2L15.5 10"></path></svg>
+          所有数据只保存在这台设备的浏览器里
+        </p>
+        <p class="credit-line">
+          鲸鱼娘素材：<a href="https://github.com/diwer/ai-biaoqingbao" target="_blank" rel="noopener">diwer/ai-biaoqingbao</a>
+          · 角色设计 ZipZipPipe / 上善无形 · CC BY-NC-SA 4.0 · 非商业二创
+        </p>
+      </section>
+
+      <aside class="side-col" aria-label="概览与设置">
+        <section class="card progress-card">
+          <div class="card-head">
+            <h2>完成进度</h2>
+            <span class="card-chip" id="progressChip">0 / 0</span>
+          </div>
+
+          <div class="ring-wrap">
+            <svg class="ring" viewBox="0 0 128 128" aria-hidden="true">
+              <defs>
+                <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#9ab4ff"></stop>
+                  <stop offset="0.55" stop-color="#4d6bfe"></stop>
+                  <stop offset="1" stop-color="#63d8f2"></stop>
+                </linearGradient>
+              </defs>
+              <circle class="ring-track" cx="64" cy="64" r="54"></circle>
+              <circle class="ring-bar" id="ringBar" cx="64" cy="64" r="54"></circle>
+            </svg>
+            <div class="ring-center">
+              <strong id="ringPercent">0%</strong>
+              <span>已完成</span>
+            </div>
+          </div>
+
+          <p class="progress-hint" id="progressHint">添加第一个任务，开始专注。</p>
+
+          <div class="mini-stats">
+            <div><strong id="statActive">0</strong><span>待完成</span></div>
+            <i class="stat-sep"></i>
+            <div><strong id="statDone">0</strong><span>已完成</span></div>
+            <i class="stat-sep"></i>
+            <div><strong id="statOverdue">0</strong><span>已逾期</span></div>
+          </div>
+        </section>
+
+        <section class="card next-card" id="nextCard">
+          <div class="card-head">
+            <h2>最近截止</h2>
+            <span class="live-dot" aria-hidden="true"></span>
+          </div>
+          <div class="next-body" id="nextBody">
+            <p class="next-label"><span class="pulse-dot"></span>NEXT DEADLINE</p>
+            <div class="next-time">--:--:--</div>
+            <p class="next-title">还没有安排</p>
+            <div class="next-meta"><span>添加任务后会显示倒计时</span><span></span></div>
+            <div class="next-bar"><i></i></div>
+          </div>
+        </section>
+
+        <section class="card settings-card" aria-label="提醒设置">
+          <div class="setting-row">
+            <div class="setting-copy">
+              <strong>提醒声音</strong>
+              <span>到期时播放提示音</span>
+            </div>
+            <button class="switch" id="soundToggle" type="button" role="switch" aria-checked="true" aria-label="提醒声音">
+              <span></span>
+            </button>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-copy">
+              <strong>桌面通知</strong>
+              <span id="notifyStatus">未开启</span>
+            </div>
+            <button class="btn-ghost" id="notifyBtn" type="button">开启</button>
+          </div>
+
+          <div class="settings-foot">
+            <button class="link-btn" id="previewBtn" type="button">预览提醒效果</button>
+            <span>本地保存</span>
+          </div>
+        </section>
+
+        <p class="side-foot">愿每一件小事，都被温柔地记住。</p>
+      </aside>
+    </main>
+  </div>
+
+  <div class="toast-layer" id="toastLayer" aria-live="polite" aria-atomic="false"></div>
+
+  <div class="modal-backdrop" id="alertModal" aria-hidden="true">
+    <div class="alert-modal" role="dialog" aria-modal="true" aria-labelledby="alertTitle" aria-describedby="alertTaskName">
+      <div class="alarm-art" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M18 9a6 6 0 10-12 0c0 6.2-2.4 6.6-2.4 8.2h16.8C20.4 15.6 18 15.2 18 9z"></path>
+          <path d="M9.6 20.2a2.8 2.8 0 004.8 0"></path>
+        </svg>
+      </div>
+      <p class="alert-kicker" id="alertKicker">DEADLINE</p>
+      <h2 id="alertTitle">时间到了</h2>
+      <p class="alert-task" id="alertTaskName"></p>
+      <p class="alert-time" id="alertTaskTime"></p>
+      <div class="alert-actions">
+        <button class="btn-primary" id="alertDone" type="button">标记完成</button>
+        <button class="btn-secondary" id="alertSnooze" type="button">5 分钟后再提醒</button>
+        <button class="btn-text" id="alertDismiss" type="button">稍后处理</button>
+      </div>
+    </div>
+  </div>
+
+  <canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+
+  <noscript>
+    <p class="noscript">请开启 JavaScript，才能使用提醒功能。</p>
+  </noscript>
+
+  <script src="app.js?v=fish2"></script>
+</body>
+</html>
